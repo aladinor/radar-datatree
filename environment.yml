@@ -1,0 +1,26 @@
+name: radar-datatree
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.10
+  # Core dependencies
+  - xarray>=2024.1.0
+  - zarr>=2.16.0
+  - numpy>=1.24.0
+  - dask>=2024.1.0
+  - fsspec>=2024.2.0
+  - s3fs>=2024.2.0
+  - netcdf4>=1.6.0
+  # Visualization
+  - matplotlib>=3.7.0
+  - cartopy>=0.22.0
+  # Notebooks
+  - jupyter
+  - jupyterlab>=4.0.0
+  - ipywidgets>=8.0.0
+  # Optional: radar-specific tools
+  - arm_pyart
+  # Development
+  - pytest
+  - ruff
