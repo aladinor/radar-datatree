@@ -49,15 +49,20 @@ Or manually:
 ```bash
 conda create -n radar-datatree python=3.11
 conda activate radar-datatree
-conda install -c conda-forge xarray zarr xarray-datatree matplotlib cartopy arm_pyart
+conda install -c conda-forge xarray zarr matplotlib cartopy arm_pyart
 ```
 
 ### Using uv
 
 ```bash
-uv venv
+uv sync
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install xarray zarr xarray-datatree matplotlib cartopy
+```
+
+To include visualization and notebook dependencies:
+
+```bash
+uv sync --extra all
 ```
 
 ## Quick Start

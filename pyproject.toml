@@ -36,7 +36,6 @@ classifiers = [
 dependencies = [
     "xarray>=2024.1.0",
     "zarr>=2.16.0",
-    "xarray-datatree>=0.0.14",
     "numpy>=1.24.0",
     "dask[array]>=2024.1.0",
     "fsspec>=2024.2.0",
