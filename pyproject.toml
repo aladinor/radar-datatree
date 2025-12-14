@@ -10,8 +10,8 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
-    # TODO: Update with actual author information
-    { name = "Author Name", email = "author@institution.edu" },
+    { name = "Alfonso Ladino-Rincón", email = "aladinor@illinois.edu" },
+    { name = "Max Grover" },
 ]
 keywords = [
     "radar",
@@ -67,7 +67,7 @@ all = [
 Homepage = "https://github.com/aladinor/radar-datatree"
 Documentation = "https://github.com/aladinor/radar-datatree"
 Repository = "https://github.com/aladinor/radar-datatree"
-# Paper = "https://arxiv.org/abs/XXXX.XXXXX"  # TODO: Uncomment when available
+Paper = "https://doi.org/10.48550/arXiv.2510.24943"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/radar_datatree"]
