@@ -1,0 +1,94 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "radar-datatree"
+version = "0.1.0"
+description = "Examples and documentation for working with hierarchical radar data using xarray-datatree"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [
+    # TODO: Update with actual author information
+    { name = "Author Name", email = "author@institution.edu" },
+]
+keywords = [
+    "radar",
+    "weather",
+    "meteorology",
+    "xarray",
+    "datatree",
+    "zarr",
+    "nexrad",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dependencies = [
+    "xarray>=2024.1.0",
+    "zarr>=2.16.0",
+    "xarray-datatree>=0.0.14",
+    "numpy>=1.24.0",
+    "dask[array]>=2024.1.0",
+    "fsspec>=2024.2.0",
+    "s3fs>=2024.2.0",
+    "netcdf4>=1.6.0",
+]
+
+[project.optional-dependencies]
+viz = [
+    "matplotlib>=3.7.0",
+    "cartopy>=0.22.0",
+]
+notebooks = [
+    "jupyter>=1.0.0",
+    "jupyterlab>=4.0.0",
+    "ipywidgets>=8.0.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+all = [
+    "radar-datatree[viz,notebooks,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/aladinor/radar-datatree"
+Documentation = "https://github.com/aladinor/radar-datatree"
+Repository = "https://github.com/aladinor/radar-datatree"
+# Paper = "https://arxiv.org/abs/XXXX.XXXXX"  # TODO: Uncomment when available
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/radar_datatree"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=radar_datatree"
