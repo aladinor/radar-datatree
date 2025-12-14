@@ -60,12 +60,6 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv pip install xarray zarr xarray-datatree matplotlib cartopy
 ```
 
-### Using pip
-
-```bash
-pip install xarray zarr xarray-datatree matplotlib cartopy
-```
-
 ## Quick Start
 
 ```python
