@@ -1,0 +1,27 @@
+name: radar-datatree
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python>=3.11
+  - fsspec
+  - jupyterlab
+  - notebook
+  - ipykernel
+  - dask
+  - distributed
+  - netcdf4
+  - bottleneck
+  - hvplot
+  - datashader
+  - zarr>=3.1.2
+  - s3fs>=2025.5.1
+  - xarray>=2025.10.0
+  - xradar>=0.10.0
+  - pandas
+  - numpy<2.3
+  - matplotlib
+  - cmweather
+  - pip
+  - pip:
+      - icechunk>=1.1.10

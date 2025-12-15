@@ -1,0 +1,57 @@
+[project]
+name = "radar-datatree"
+version = "0.1.0"
+description = "Examples and tutorials for accessing ARCO weather radar data using the Radar DataTree framework"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Alfonso Ladino-Rincón", email = "alfonso8@illinois.edu"}
+]
+keywords = ["radar", "weather", "zarr", "xarray", "ARCO", "cloud-native"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+
+dependencies = [
+    "xarray>=2025.10.0",
+    "xradar>=0.10.0",
+    "zarr>=3.1.2",
+    "icechunk>=1.1.10",
+    "fsspec",
+    "s3fs>=2025.5.1",
+    "dask",
+    "distributed",
+    "pandas",
+    "numpy<2.3",
+    "matplotlib",
+    "cmweather",
+    "hvplot",
+    "datashader",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyterlab",
+    "notebook",
+    "ipykernel",
+]
+
+[project.urls]
+Homepage = "https://github.com/aladinor/radar-datatree"
+Documentation = "https://github.com/aladinor/radar-datatree"
+Repository = "https://github.com/aladinor/radar-datatree"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["notebooks"]
