@@ -3,7 +3,6 @@
 # Radar DataTree
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![DOI](https://zenodo.org/badge/658848435.svg)](https://zenodo.org/doi/10.5281/zenodo.10069535)
 
 **Examples and tutorials for accessing Analysis-Ready Cloud-Optimized (ARCO) weather radar data.**
 
