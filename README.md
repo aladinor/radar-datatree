@@ -16,7 +16,15 @@ This repository showcases the **Radar DataTree** framework described in:
 > *Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives*
 > arXiv:2510.24943 [cs.DC] — https://doi.org/10.48550/arXiv.2510.24943
 
-Please cite this work if you use the Radar DataTree framework or data.
+```bibtex
+@article{ladino2025radardatatree,
+  title={Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives},
+  author={Ladino-Rinc{\'o}n, Alfonso and Nesbitt, Stephen W.},
+  journal={arXiv preprint arXiv:2510.24943},
+  year={2025},
+  doi={10.48550/arXiv.2510.24943}
+}
+```
 
 ## What is Radar DataTree?
 
@@ -24,13 +32,13 @@ Radar DataTree transforms operational radar archives into FAIR-compliant, cloud-
 
 ### Key Benefits
 
-| Traditional Approach                   | Radar DataTree |
-|----------------------------------------|----------------|
-| Download thousands of individual files | Stream directly from cloud storage |
-| Decompress and parse each file         | Data immediately accessible |
-| No temporal indexing                   | Time-indexed collections |
-| Sequential file-by-file processing     | Parallel I/O with lazy evaluation |
-| Hours/Days for multi-week analysis     | **Minutes** for multi-week analysis |
+| Traditional Approach                   | Radar DataTree                         |
+|----------------------------------------|----------------------------------------|
+| Download thousands of individual files | Stream directly from cloud storage     |
+| Decompress and parse each file         | Data immediately accessible            |
+| No temporal indexing                   | Time-indexed collections               |
+| Sequential file-by-file processing     | Parallel I/O with lazy evaluation      |
+| Hours/Days for multi-week analysis     | **Minutes** for multi-week analysis    |
 
 ### Performance Highlights
 
@@ -40,12 +48,12 @@ Radar DataTree transforms operational radar archives into FAIR-compliant, cloud-
 
 ### Technology Stack
 
-| Component | Role |
-|-----------|------|
-| **FM-301/CfRadial 2.1** | WMO standard for radar volumes and sweeps |
-| **xarray.DataTree** | Hierarchical in-memory data representation |
-| **Zarr** | Chunked, compressed, cloud-native storage |
-| **Icechunk** | ACID-compliant transactional storage with version control |
+| Component               | Role                                                    |
+|-------------------------|---------------------------------------------------------|
+| **FM-301/CfRadial 2.1** | WMO standard for radar volumes and sweeps               |
+| **xarray.DataTree**     | Hierarchical in-memory data representation              |
+| **Zarr**                | Chunked, compressed, cloud-native storage               |
+| **Icechunk**            | ACID-compliant transactional storage with version control |
 
 ## Available Data
 
@@ -89,14 +97,6 @@ conda activate radar-datatree
 git clone https://github.com/aladinor/radar-datatree.git
 cd radar-datatree
 uv sync
-```
-
-### Using pip
-
-```bash
-git clone https://github.com/aladinor/radar-datatree.git
-cd radar-datatree
-pip install -e ".[dev]"
 ```
 
 ## Quick Start
@@ -163,7 +163,7 @@ Radar DataTree organizes data hierarchically by **Volume Coverage Pattern (VCP)*
 │   ├── sweep_0/      # Lowest elevation
 │   ├── sweep_1/
 │   └── ...
-├── VCP-212/           # Precipitation mode
+├── VCP-212/          # Precipitation mode
 │   ├── sweep_0/
 │   └── ...
 ...
