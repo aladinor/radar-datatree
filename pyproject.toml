@@ -5,61 +5,47 @@ build-backend = "hatchling.build"
 [project]
 name = "radar-datatree"
 version = "0.1.0"
-description = "Examples and documentation for working with hierarchical radar data using xarray-datatree"
+description = "Examples and tutorials for accessing ARCO weather radar data using the Radar DataTree framework"
 readme = "README.md"
-license = "Apache-2.0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
 authors = [
-    { name = "Alfonso Ladino-Rincón", email = "aladinor@illinois.edu" },
-    { name = "Max Grover" },
+    {name = "Alfonso Ladino-Rincón", email = "alfonso8@illinois.edu"}
 ]
-keywords = [
-    "radar",
-    "weather",
-    "meteorology",
-    "xarray",
-    "datatree",
-    "zarr",
-    "nexrad",
-]
+keywords = ["radar", "weather", "zarr", "xarray", "ARCO", "cloud-native", "icechunk"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
 ]
+
 dependencies = [
-    "xarray>=2024.1.0",
-    "zarr>=2.16.0",
-    "numpy>=1.24.0",
-    "dask[array]>=2024.1.0",
-    "fsspec>=2024.2.0",
-    "s3fs>=2024.2.0",
-    "netcdf4>=1.6.0",
+    "xarray>=2025.10.0",
+    "xradar>=0.10.0",
+    "zarr>=3.1.2",
+    "icechunk>=1.1.10",
+    "fsspec",
+    "s3fs>=2025.5.1",
+    "dask",
+    "distributed",
+    "pandas",
+    "numpy<2.3",
+    "matplotlib",
+    "cmweather",
+    "hvplot",
+    "datashader",
 ]
 
 [project.optional-dependencies]
-viz = [
-    "matplotlib>=3.7.0",
-    "cartopy>=0.22.0",
-]
-notebooks = [
-    "jupyter>=1.0.0",
-    "jupyterlab>=4.0.0",
-    "ipywidgets>=8.0.0",
-]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "ruff>=0.1.0",
-]
-all = [
-    "radar-datatree[viz,notebooks,dev]",
+    "jupyterlab",
+    "notebook",
+    "ipykernel",
 ]
 
 [project.urls]
@@ -69,10 +55,10 @@ Repository = "https://github.com/aladinor/radar-datatree"
 Paper = "https://doi.org/10.48550/arXiv.2510.24943"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/radar_datatree"]
+packages = ["notebooks"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 88
 
 [tool.ruff.lint]
@@ -87,7 +73,3 @@ select = [
 ignore = [
     "E501",  # line too long (handled by formatter)
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-v --cov=radar_datatree"

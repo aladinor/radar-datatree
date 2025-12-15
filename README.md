@@ -1,173 +1,21 @@
+<img src="images/radar_datatree.png" alt="Radar DataTree" width="550"/>
+
 # Radar DataTree
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![DOI](https://zenodo.org/badge/658848435.svg)](https://zenodo.org/doi/10.5281/zenodo.10069535)
 
-A FAIR and cloud-native framework for working with hierarchical weather radar data using [xarray.DataTree](https://docs.xarray.dev/en/stable/user-guide/hierarchical-data.html), enabling scalable access and analysis of radar archives stored in cloud-optimized formats.
+**Examples and tutorials for accessing Analysis-Ready Cloud-Optimized (ARCO) weather radar data.**
+
+This repository demonstrates how to read and analyze weather radar data stored in the Radar DataTree format - a FAIR-compliant, cloud-native framework for scalable radar archives.
 
 ## Cite This Work
 
-This repository demonstrates the **Radar DataTree** framework described in:
+This repository showcases the **Radar DataTree** framework described in:
 
-> **Ladino-Rincón, A., & Nesbitt, S. W. (2025).** *Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives.* arXiv:2510.24943 [cs.DC]
->
-> https://doi.org/10.48550/arXiv.2510.24943
-
-## Motivation
-
-Weather radar data are among the most scientifically valuable yet structurally underutilized Earth observation datasets. Despite widespread public availability, operational radar archives remain **fragmented, vendor-specific, and poorly aligned with FAIR principles** (Findable, Accessible, Interoperable, Reusable).
-
-**Radar DataTree** addresses these limitations by transforming operational radar archives into FAIR-compliant, cloud-optimized datasets. This framework extends the WMO [FM-301/CfRadial 2.1](https://community.wmo.int/en/activity-areas/wis/wmo-cf-extensions) standard from individual radar volume scans to **time-resolved, analysis-ready archives**.
-
-### Key Features
-
-- **Dataset-level organization**: Entire radar archives as structured, time-indexed collections
-- **Cloud-native access**: Zarr serialization optimized for parallel I/O and lazy evaluation
-- **Metadata preservation**: Full FM-301/CF compliance with sweep-level detail
-- **Concurrent-safe writes**: Icechunk transactions enable real-time ingestion without data corruption
-- **Scalable performance**: Demonstrated 100x+ speedups over traditional file-based workflows
-
-## Core Architecture
-
-| Component | Role |
-|-----------|------|
-| **FM-301/CfRadial 2.1** | File-level standard for radar volumes and sweeps |
-| **xarray.DataTree** | Hierarchical in-memory representation of scan collections |
-| **Zarr** | Chunked, compressed, cloud-native storage format |
-| **Icechunk** | ACID-compliant transactional engine for versioned datasets |
-
-## Installation
-
-### Using conda
-
-```bash
-conda env create -f environment.yml
-conda activate radar-datatree
-```
-
-Or manually:
-
-```bash
-conda create -n radar-datatree python=3.11
-conda activate radar-datatree
-conda install -c conda-forge xarray zarr matplotlib cartopy arm_pyart
-```
-
-### Using uv
-
-```bash
-uv sync
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
-
-To include visualization and notebook dependencies:
-
-```bash
-uv sync --extra all
-```
-
-## Quick Start
-
-```python
-import xarray as xr
-
-# Open a radar datatree from Zarr store
-dt = xr.open_datatree("s3://bucket/path/to/radar.zarr", engine="zarr")
-
-# Explore the structure
-print(dt)
-
-# Access a specific sweep
-sweep_0 = dt["sweep_0"]
-
-# Plot reflectivity
-sweep_0["DBZ"].plot()
-```
-
-## Data Structure
-
-The radar data is organized in a hierarchical tree structure following FM-301/CfRadial 2.1:
-
-```
-/
-├── attrs: {radar metadata, instrument_name, latitude, longitude, ...}
-├── sweep_0/
-│   ├── attrs: {elevation, sweep_number, sweep_mode, ...}
-│   ├── DBZ (azimuth, range)      # Reflectivity
-│   ├── VEL (azimuth, range)      # Radial velocity
-│   ├── ZDR (azimuth, range)      # Differential reflectivity
-│   └── ...
-├── sweep_1/
-│   └── ...
-└── sweep_N/
-    └── ...
-```
-
-## Examples & Demo Notebooks
-
-See the [`examples/`](examples/) directory for Jupyter notebooks demonstrating:
-
-- Reading and exploring radar datatrees
-- Visualizing radar data with matplotlib and cartopy
-- Working with multiple sweeps
-- Extracting time series and profiles
-
-### Interactive Demos
-
-Explore interactive examples at the **[Radar DataTree Demo Repository](https://github.com/earth-mover/radar-data-demo)**:
-
-- QVP (Quasi-Vertical Profile) computation from cloud-hosted archives
-- QPE (Quantitative Precipitation Estimation) accumulation workflows
-- Time-series extraction and analysis
-
-## Demonstrated Performance
-
-Case studies on operational NEXRAD archives show:
-
-- **100x+ speedup** for Quasi-Vertical Profile (QVP) generation
-- **70-150x speedup** for Quantitative Precipitation Estimation (QPE)
-- Sub-minute retrieval of multi-week time series from cloud storage
-
-## Supported Formats
-
-The Radar DataTree framework supports conversion from:
-
-- NEXRAD Level II (including dynamic scans: SAILS, MRLE, AVSET)
-- SIGMET/IRIS
-- ODIM_H5
-
-## Data Conversion
-
-The radar data shown in these examples was converted from raw radar formats using the `raw2zarr` conversion tool.
-
-**Note**: The `raw2zarr` package is currently under licensing review by the University of Illinois at Urbana-Champaign Office of Technology Management. If you are interested in converting your own radar data to this format, please contact us directly.
-
-### Contact for Data Conversion
-
-- **GitHub**: [@aladinor](https://github.com/aladinor)
-- **Issues**: Feel free to open an issue in this repository
-
-## Related Projects
-
-- [xarray](https://xarray.pydata.org/) - N-D labeled arrays and datasets in Python
-- [xarray.DataTree](https://docs.xarray.dev/en/stable/user-guide/hierarchical-data.html) - Hierarchical data structures for xarray
-- [Zarr](https://zarr.readthedocs.io/) - Chunked, compressed, N-dimensional arrays
-- [Icechunk](https://icechunk.io/) - Transactional storage engine for Zarr
-- [Xradar](https://docs.openradarscience.org/projects/xradar/) - Xarray-based radar data I/O
-- [Py-ART](https://arm-doe.github.io/pyart/) - Python ARM Radar Toolkit
-- [wradlib](https://docs.wradlib.org/) - Open Source Library for Weather Radar Data Processing
-
-## Authors
-
-- [Alfonso Ladino-Rincón](https://github.com/aladinor)
-- [Max Grover](https://github.com/mgrover1)
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## Citation
-
-If you use this work in your research, please cite:
+> **Ladino-Rincón & Nesbitt (2025)**
+> *Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives*
+> arXiv:2510.24943 [cs.DC] — https://doi.org/10.48550/arXiv.2510.24943
 
 ```bibtex
 @article{ladino2025radardatatree,
@@ -179,8 +27,182 @@ If you use this work in your research, please cite:
 }
 ```
 
+## What is Radar DataTree?
+
+Radar DataTree transforms operational radar archives into FAIR-compliant, cloud-optimized datasets. It extends the WMO FM-301/CfRadial 2.1 standard from individual radar volume scans to **time-resolved, analysis-ready archives**.
+
+### Key Benefits
+
+| Traditional Approach                   | Radar DataTree                         |
+|----------------------------------------|----------------------------------------|
+| Download thousands of individual files | Stream directly from cloud storage     |
+| Decompress and parse each file         | Data immediately accessible            |
+| No temporal indexing                   | Time-indexed collections               |
+| Sequential file-by-file processing     | Parallel I/O with lazy evaluation      |
+| Hours/Days for multi-week analysis     | **Minutes** for multi-week analysis    |
+
+### Performance Highlights
+
+- **Sub-second metadata access**: Load metadata for ~92 GB of radar data in ~1.5 seconds
+- **100x+ speedup** for Quasi-Vertical Profile (QVP) generation
+- **70-150x speedup** for Quantitative Precipitation Estimation (QPE)
+
+### Technology Stack
+
+| Component               | Role                                                    |
+|-------------------------|---------------------------------------------------------|
+| **FM-301/CfRadial 2.1** | WMO standard for radar volumes and sweeps               |
+| **xarray.DataTree**     | Hierarchical in-memory data representation              |
+| **Zarr**                | Chunked, compressed, cloud-native storage               |
+| **Icechunk**            | ACID-compliant transactional storage with version control |
+
+## Available Data
+
+### NEXRAD KLOT (Chicago, IL)
+
+NEXRAD data for KLOT is available on the **Open Storage Network (OSN)**:
+
+- **Bucket**: `nexrad-arco`
+- **Prefix**: `KLOT-RT`
+- **Endpoint**: `https://umn1.osn.mghpcc.org`
+- **Access**: Anonymous (no credentials required)
+
+```python
+import icechunk as ic
+
+storage = ic.s3_storage(
+    bucket='nexrad-arco',
+    prefix='KLOT-RT',
+    endpoint_url='https://umn1.osn.mghpcc.org',
+    anonymous=True,
+    force_path_style=True,
+    region='us-east-1',
+)
+repo = ic.Repository.open(storage)
+```
+
+## Installation
+
+### Using conda (recommended)
+
+```bash
+git clone https://github.com/aladinor/radar-datatree.git
+cd radar-datatree
+conda env create -f environment.yml
+conda activate radar-datatree
+```
+
+### Using uv
+
+```bash
+git clone https://github.com/aladinor/radar-datatree.git
+cd radar-datatree
+uv sync
+```
+
+## Quick Start
+
+```python
+import xarray as xr
+import icechunk as ic
+
+# Connect to KLOT data on OSN
+storage = ic.s3_storage(
+    bucket='nexrad-arco',
+    prefix='KLOT-RT',
+    endpoint_url='https://umn1.osn.mghpcc.org',
+    anonymous=True,
+    force_path_style=True,
+    region='us-east-1',
+)
+repo = ic.Repository.open(storage)
+session = repo.readonly_session("main")
+
+# Open the DataTree (lazy loading - only metadata)
+dtree = xr.open_datatree(
+    session.store,
+    zarr_format=3,
+    consolidated=False,
+    chunks={},
+    engine="zarr",
+)
+
+# Explore the structure
+print(f"Dataset size: {dtree.nbytes / 1024**3:.2f} GB")
+dtree.prune()
+
+# Plot reflectivity from the latest scan
+dtree["VCP-34/sweep_0"].DBZH.isel(vcp_time=-1).plot(
+    x="x", y="y", cmap="ChaseSpectral", vmin=-10, vmax=70
+)
+```
+
+## Examples
+
+### Notebooks
+
+| Notebook | Description |
+|----------|-------------|
+| [NEXRAD-KLOT-Demo.ipynb](notebooks/NEXRAD-KLOT-Demo.ipynb) | Complete tutorial on accessing KLOT data, visualizing radar scans, and computing Quasi-Vertical Profiles |
+
+### Running the Examples
+
+```bash
+cd notebooks
+jupyter lab
+```
+
+Open `NEXRAD-KLOT-Demo.ipynb` to get started.
+
+## Data Structure
+
+Radar DataTree organizes data hierarchically by **Volume Coverage Pattern (VCP)** and **sweep**:
+
+```
+/
+├── VCP-34/           # Clear-air mode
+│   ├── sweep_0/      # Lowest elevation
+│   ├── sweep_1/
+│   └── ...
+├── VCP-212/          # Precipitation mode
+│   ├── sweep_0/
+│   └── ...
+...
+```
+
+Each sweep contains polarimetric variables:
+- **DBZH**: Horizontal reflectivity (dBZ)
+- **ZDR**: Differential reflectivity (dB)
+- **RHOHV**: Cross-correlation coefficient
+- **PHIDP**: Differential phase (degrees)
+- **VELOCITY**: Radial velocity (m/s)
+
+## Need to Convert Your Own Data?
+
+If you need to convert radar data (NEXRAD, SIGMET/IRIS, ODIM_H5, RAW) to this ARCO format, please contact:
+
+**Alfonso Ladino-Rincón**
+- GitHub: [@aladinor](https://github.com/aladinor)
+- Email: alfonso8@illinois.edu
+
 ## References
 
-- Ladino-Rincón, A., & Nesbitt, S. W. (2025). Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives. *arXiv preprint arXiv:2510.24943 [cs.DC]*. https://doi.org/10.48550/arXiv.2510.24943
+- **Ladino-Rincón, A., & Nesbitt, S. W. (2025).** Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives. *arXiv preprint arXiv:2510.24943 [cs.DC]*. https://doi.org/10.48550/arXiv.2510.24943
 
 - Abernathey, R. P., et al. (2021). Cloud-Native Repositories for Big Scientific Data. *Computing in Science & Engineering*, 23(2), 26-35. doi:10.1109/MCSE.2021.3059437
+
+## Related Projects
+
+- [xarray](https://xarray.dev) - N-D labeled arrays and datasets
+- [xradar](https://xradar.dev) - Radar data I/O and analysis
+- [Zarr](https://zarr.dev) - Chunked, compressed N-dimensional arrays
+- [Icechunk](https://icechunk.io) - Transactional storage engine for Zarr
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- [Alfonso Ladino-Rincón](https://github.com/aladinor) - University of Illinois Urbana-Champaign
+- [Stephen Nesbitt](https://github.com/swnesbitt) - University of Illinois Urbana-Champaign
