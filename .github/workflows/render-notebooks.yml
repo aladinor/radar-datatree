@@ -1,0 +1,132 @@
+name: Render Notebooks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'notebooks/**'
+      - '.github/workflows/render-notebooks.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'notebooks/**'
+  workflow_dispatch:  # Allow manual triggering
+
+# Cancel previous runs on the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Sets permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Set up Python and create venv
+        run: |
+          uv python install 3.12
+          uv venv --python 3.12
+
+      - name: Install dependencies
+        run: |
+          uv pip install -e .
+          uv pip install nbconvert jupyter
+
+      - name: Run linting checks
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run black --check notebooks/
+
+      - name: Version Info
+        run: |
+          uv run python -c "import xarray; print(f'xarray: {xarray.__version__}')"
+          uv run python -c "import xradar; print(f'xradar: {xradar.__version__}')"
+          uv run python -c "import zarr; print(f'zarr: {zarr.__version__}')"
+          uv run python -c "import icechunk; print(f'icechunk: {icechunk.__version__}')"
+
+      - name: Render notebooks to HTML
+        run: |
+          mkdir -p _build/html
+
+          # Convert notebooks to HTML (no execution - use saved outputs)
+          echo "Rendering notebooks..."
+          uv run jupyter nbconvert \
+            --to html \
+            --output-dir=_build/html \
+            notebooks/QVP-Workflow-Comparison.ipynb \
+            notebooks/NEXRAD-KLOT-Demo.ipynb
+
+          # Copy any generated images
+          cp -r notebooks/*.png _build/html/ 2>/dev/null || true
+          cp -r images/ _build/html/images/ 2>/dev/null || true
+
+          # Create index.html with links to all notebooks
+          cat > _build/html/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Radar DataTree - Examples</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                     padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+              h1 { color: #333; }
+              a { color: #0066cc; }
+              ul { padding-left: 20px; }
+              li { margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Radar DataTree Examples</h1>
+            <p>Examples and tutorials for accessing Analysis-Ready Cloud-Optimized (ARCO) weather radar data.</p>
+            <h2>Notebooks</h2>
+            <ul>
+              <li><a href="NEXRAD-KLOT-Demo.html">NEXRAD KLOT Demo</a> - Complete tutorial on accessing KLOT data, visualizing radar scans, and computing QVPs</li>
+              <li><a href="QVP-Workflow-Comparison.html">QVP Workflow Comparison</a> - Compares ARCO vs traditional file-based workflows</li>
+            </ul>
+            <h2>Learn More</h2>
+            <ul>
+              <li><a href="https://github.com/aladinor/radar-datatree">GitHub Repository</a></li>
+              <li><a href="https://doi.org/10.48550/arXiv.2510.24943">Paper: arXiv:2510.24943</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload artifact for Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/html
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: render
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

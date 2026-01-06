@@ -37,7 +37,7 @@ NEXRAD KLOT data on OSN:
 ### Environment Setup
 
 ```bash
-# Conda
+# Conda (recommended)
 conda env create -f environment.yml
 conda activate radar-datatree
 
@@ -55,12 +55,67 @@ cd notebooks
 jupyter lab
 ```
 
+### Linting
+
+```bash
+ruff check .          # Run linting
+ruff format .         # Format code
+ruff check --fix .    # Auto-fix linting issues
+```
+
+## Quick Start (Programmatic Access)
+
+```python
+import xarray as xr
+import icechunk as ic
+
+# Connect to KLOT data
+storage = ic.s3_storage(
+    bucket='nexrad-arco',
+    prefix='KLOT-RT',
+    endpoint_url='https://umn1.osn.mghpcc.org',
+    anonymous=True,
+    force_path_style=True,
+    region='us-east-1',
+)
+repo = ic.Repository.open(storage)
+session = repo.readonly_session("main")
+
+# Open DataTree (lazy loading)
+dtree = xr.open_datatree(
+    session.store,
+    zarr_format=3,
+    consolidated=False,
+    chunks={},
+    engine="zarr",
+)
+```
+
 ## Key Files
 
 - `notebooks/NEXRAD-KLOT-Demo.ipynb`: Main tutorial notebook demonstrating data access and QVP computation
+- `notebooks/QVP-Workflow-Comparison.ipynb`: Compares ARCO vs traditional file-based workflows
 - `notebooks/demo_functions.py`: Helper functions for QVP computation, visualization, and data utilities
 - `environment.yml`: Conda environment specification
 - `pyproject.toml`: Python package configuration (for uv/pip installation)
+
+## Helper Functions (demo_functions.py)
+
+Key utilities in `notebooks/demo_functions.py`:
+- `compute_qvp(ds, var)`: Computes Quasi-Vertical Profiles via azimuthal averaging
+- `rain_depth(z, a, b, t)`: Estimates rainfall depth using Z-R relationships (Marshall-Palmer)
+- `ryzhkov_figure(...)`: Creates 2x2 polarimetric variable visualization (Z, ZDR, RhoHV, PhiDP)
+- `get_repo_config()`: Returns Icechunk repository configuration with manifest splitting
+- `list_nexrad_files(...)`: Lists NEXRAD files from AWS S3 by date/radar/time
+- `nexrad_donwload(s3filepath)`: Downloads and parses NEXRAD data from S3
+
+## CI/CD
+
+GitHub Actions workflow (`.github/workflows/render-notebooks.yml`):
+- Executes notebooks on push/PR to `main`
+- Converts notebooks to HTML
+- Deploys to GitHub Pages (main branch only)
+- Caches NEXRAD data at `~/.cache/fsspec`
 
 ## Reference Paper
 
