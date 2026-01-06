@@ -62,53 +62,51 @@ jobs:
           uv run python -c "import zarr; print(f'zarr: {zarr.__version__}')"
           uv run python -c "import icechunk; print(f'icechunk: {icechunk.__version__}')"
 
-      # Cache NEXRAD data to avoid re-downloading on subsequent runs
-      - name: Cache NEXRAD data
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/fsspec
-          key: nexrad-notebook-data-v1
-          restore-keys: |
-            nexrad-notebook-data-
-
-      - name: Execute and render notebooks
+      - name: Render notebooks to HTML
         run: |
           mkdir -p _build/html
 
-          # Execute and convert QVP-Workflow-Comparison notebook
-          echo "Executing QVP-Workflow-Comparison.ipynb..."
+          # Convert notebooks to HTML (no execution - use saved outputs)
+          echo "Rendering notebooks..."
           uv run jupyter nbconvert \
             --to html \
-            --execute \
-            --ExecutePreprocessor.timeout=600 \
             --output-dir=_build/html \
-            notebooks/QVP-Workflow-Comparison.ipynb
+            notebooks/QVP-Workflow-Comparison.ipynb \
+            notebooks/NEXRAD-KLOT-Demo.ipynb
 
           # Copy any generated images
           cp -r notebooks/*.png _build/html/ 2>/dev/null || true
           cp -r images/ _build/html/images/ 2>/dev/null || true
 
-          # Create index.html that redirects to the main notebook
+          # Create index.html with links to all notebooks
           cat > _build/html/index.html << 'EOF'
           <!DOCTYPE html>
           <html>
           <head>
             <meta charset="utf-8">
-            <title>Radar DataTree - ARCO Workflow Comparison</title>
-            <meta http-equiv="refresh" content="0; url=QVP-Workflow-Comparison.html">
+            <title>Radar DataTree - Examples</title>
             <style>
               body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                     padding: 40px; max-width: 800px; margin: 0 auto; }
+                     padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
               h1 { color: #333; }
               a { color: #0066cc; }
+              ul { padding-left: 20px; }
+              li { margin: 10px 0; }
             </style>
           </head>
           <body>
-            <h1>Radar DataTree - ARCO Workflow Comparison</h1>
-            <p>Redirecting to <a href="QVP-Workflow-Comparison.html">QVP Workflow Comparison</a>...</p>
-            <p>This notebook demonstrates the benefits of Analysis-Ready Cloud-Optimized (ARCO)
-               radar data compared to traditional file-based workflows.</p>
+            <h1>Radar DataTree Examples</h1>
+            <p>Examples and tutorials for accessing Analysis-Ready Cloud-Optimized (ARCO) weather radar data.</p>
+            <h2>Notebooks</h2>
+            <ul>
+              <li><a href="NEXRAD-KLOT-Demo.html">NEXRAD KLOT Demo</a> - Complete tutorial on accessing KLOT data, visualizing radar scans, and computing QVPs</li>
+              <li><a href="QVP-Workflow-Comparison.html">QVP Workflow Comparison</a> - Compares ARCO vs traditional file-based workflows</li>
+            </ul>
+            <h2>Learn More</h2>
+            <ul>
+              <li><a href="https://github.com/aladinor/radar-datatree">GitHub Repository</a></li>
+              <li><a href="https://doi.org/10.48550/arXiv.2510.24943">Paper: arXiv:2510.24943</a></li>
+            </ul>
           </body>
           </html>
           EOF
