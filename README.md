@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="images/radar_datatree.png" alt="Radar DataTree" width="600"/>
-</p>
-
 <h1 align="center">Radar DataTree</h1>
 
 <p align="center">
@@ -42,7 +38,13 @@ Weather radar data is among the most scientifically valuable yet structurally un
 
 ### The Solution
 
-Radar DataTree provides a **dataset-level abstraction** that organizes radar collections as hierarchical, metadata-rich datasets aligned along time:
+Radar DataTree provides a **dataset-level abstraction** that aggregates individual radar files into a **single hierarchical dataset** for seamless time-series analysis and scalable cloud storage—while preserving each VCP's unique structure.
+
+<p align="center">
+  <img src="images/radar_datatree.png" alt="Radar DataTree Architecture" width="800"/>
+</p>
+
+**Data Structure:**
 
 ```
 /
@@ -81,10 +83,6 @@ All benchmarks performed on commodity hardware (laptop with 4 cores, 12 threads)
 | **xarray.DataTree** | Hierarchical in-memory data representation |
 | **Zarr** | Chunked, compressed, cloud-native storage |
 | **Icechunk** | ACID-compliant transactional storage with version control |
-
-<p align="center">
-  <img src="images/full-jtech-d-15-0020_1-f4.jpg" alt="QVP Example" width="500"/>
-</p>
 
 ---
 
