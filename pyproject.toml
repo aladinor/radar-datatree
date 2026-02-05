@@ -25,10 +25,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "xarray>=2025.10.0",
+    # Custom xarray branch with async DataTree support
+    "xarray @ git+https://github.com/aladinor/xarray.git@async-dtreec",
     "xradar>=0.10.0",
     "zarr>=3.1.2",
-    "icechunk>=1.1.10",
+    # Icechunk v2 from git (pinned before breaking change)
+    "icechunk @ git+https://github.com/earth-mover/icechunk.git@d11af22#subdirectory=icechunk-python",
     "fsspec",
     "s3fs>=2025.5.1",
     "dask",
@@ -39,6 +41,9 @@ dependencies = [
     "cmweather",
     "hvplot",
     "datashader",
+    "cartopy>=0.25.0",
+    "jupyter>=1.1.1",
+    "lab>=8.8",
 ]
 
 [project.optional-dependencies]
@@ -53,6 +58,9 @@ Homepage = "https://github.com/aladinor/radar-datatree"
 Documentation = "https://github.com/aladinor/radar-datatree"
 Repository = "https://github.com/aladinor/radar-datatree"
 Paper = "https://doi.org/10.48550/arXiv.2510.24943"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["notebooks"]
@@ -85,4 +93,11 @@ dev = [
     "ruff>=0.14.10",
     "sphinx>=8.2.3",
     "sphinx-book-theme>=1.1.4",
+    "sphinx-design>=0.6.1",
+    "sphinx-copybutton>=0.5.1",
 ]
+
+[tool.uv]
+# Allow mixing packages from PyPI and nightly wheels index
+extra-index-url = ["https://pypi.anaconda.org/scientific-python-nightly-wheels/simple"]
+index-strategy = "unsafe-best-match"
