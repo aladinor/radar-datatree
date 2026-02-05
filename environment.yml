@@ -25,3 +25,5 @@ dependencies:
   - pip
   - pip:
       - icechunk>=1.1.10
+      - sphinx-design>=0.6.1
+      - sphinx-copybutton>=0.5.1

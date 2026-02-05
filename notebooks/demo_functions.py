@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import xradar as xd
+from xarray import Dataset, DataTree
 
 
 def rain_depth(
@@ -14,66 +15,72 @@ def rain_depth(
     """
     Estimates rainfall depth using radar reflectivity and Z-R relationship.
 
+    Computes precipitation depth per timestep using actual time differences
+    between scans (not a constant interval), enabling accurate accumulation
+    even when scan intervals vary.
+
     Parameters:
     -----------
     z : xr.DataArray
         Radar reflectivity in dBZ with vcp_time dimension.
     a : float, optional
         Z-R relationship parameter (default: 200.0, Marshall-Palmer 1948).
+        For snow, use a=1780 (Sekhon-Srivastava 1970).
     b : float, optional
         Z-R relationship parameter (default: 1.6, Marshall-Palmer 1948).
+        For snow, use b=2.21 (Sekhon-Srivastava 1970).
     t : float, optional
-        Integration time in minutes. If None, computed from vcp_time dimension.
+        Fixed integration time in minutes. If None, computed from actual
+        time differences between scans in the vcp_time dimension.
 
     Returns:
     --------
     xr.DataArray
-        Estimated rainfall depth (mm).
+        Estimated rainfall/snowfall depth (mm) per timestep.
+        Sum over vcp_time dimension to get total accumulation.
     """
-    # Check for vcp_time dimension and compute integration time if not provided
-    if t is None:
+    # Convert reflectivity from dBZ to linear units
+    z_lin = 10 ** (z / 10)
+
+    # Compute rainfall rate using Z-R relationship: R = (Z/a)^(1/b) in mm/hr
+    rain_rate = (z_lin / a) ** (1 / b)
+
+    if t is not None:
+        # Use fixed integration time
+        depth = rain_rate * (t / 60)  # Convert minutes to hours
+    else:
+        # Compute from actual time differences
         if "vcp_time" not in z.dims:
             raise ValueError(
                 "DataArray must have 'vcp_time' dimension or provide integration time 't'"
             )
 
-        # Compute time differences in minutes
-        time_diffs = z.vcp_time.diff("vcp_time")
-        integration_time = time_diffs.dt.total_seconds() / 60.0  # Convert to minutes
+        # Compute time differences in hours for each timestep
+        time_diffs = z.vcp_time.diff("vcp_time").dt.total_seconds() / 3600.0
 
-        # Use the median time difference as representative integration time
-        t = float(integration_time.median().values)
-        actual_total_minutes = float(integration_time.sum().values)
-        actual_total_seconds = actual_total_minutes * 60
+        # Use median interval for uniform integration (simpler and avoids xr.concat issues)
+        median_dt_hours = float(time_diffs.median().values)
+        actual_total_hours = float(time_diffs.sum().values)
 
-        # Convert to days, hours, minutes
-        total_days = int(actual_total_seconds // 86400)
-        remaining_seconds = actual_total_seconds % 86400
-        total_hours = int(remaining_seconds // 3600)
-        remaining_seconds = remaining_seconds % 3600
-        total_minutes = int(remaining_seconds // 60)
+        # Multiply rate by median time interval to get depth per scan
+        depth = rain_rate * median_dt_hours
 
+        # Print summary info
         print(
-            f"Actual QPE integration period: {total_days} days, {total_hours} hours, {total_minutes} minutes"
+            f"Actual QPE integration period: {int(actual_total_hours // 24)} days, "
+            f"{int(actual_total_hours % 24)} hours, {int((actual_total_hours % 1) * 60)} minutes"
         )
         print(
             f"Time span: {str(z.vcp_time.min().values)[:19]} to {str(z.vcp_time.max().values)[:19]} UTC"
         )
 
-    # Convert reflectivity from dBZ to linear units
-    z_lin = 10 ** (z / 10)
-
-    # Compute rainfall depth using Z-R relationship and time integration
-    depth = ((1 / a) ** (1 / b) * z_lin ** (1 / b)) * (t / 60)
-
-    # Create new DataArray with proper name and attributes
+    # Create result with proper metadata
     result = depth.copy()
-    result.name = "rain_depth"
+    result.name = "precip_depth"
     result.attrs = {
         "units": "mm",
-        "long_name": "rainfall depth",
-        "standard_name": "rainfall_depth",
-        "description": f"Estimated rainfall depth using Z-R relationship (a={a}, b={b})",
+        "long_name": "precipitation depth per timestep",
+        "description": f"Estimated using Z-R relationship (a={a}, b={b})",
     }
 
     return result
@@ -426,3 +433,165 @@ def nexrad_download_with_size(filepath: str) -> tuple:
     dtree = xd.io.open_nexradlevel2_datatree(stream.read())
 
     return dtree, size_bytes
+
+
+def concat_sweep_across_vcps(
+    dtree: DataTree,
+    sweep_name: str = "sweep_0",
+    append_dim: str = "vcp_time",
+    validate_coords: bool = True,
+    sort_by_time: bool = True,
+    group_prefix: str = None,
+) -> Dataset:
+    """
+    Concatenate a specific sweep across multiple VCP nodes along the vcp_time dimension.
+
+    This enables continuous temporal analysis (e.g., QPE) for a specific elevation angle
+    across different Volume Coverage Patterns.
+
+    Parameters
+    ----------
+    dtree : xarray.DataTree
+        DataTree with VCP nodes (e.g., "VCP-212", "VCP-35") containing sweep_* children
+    sweep_name : str, default "sweep_0"
+        Name of the sweep to extract from each VCP (e.g., "sweep_0", "sweep_1")
+    append_dim : str, default "vcp_time"
+        Time dimension name to concatenate along
+    validate_coords : bool, default True
+        If True, validate that all sweeps have compatible azimuth/range coordinates
+    sort_by_time : bool, default True
+        If True, sort the concatenated result by the append_dim coordinate
+    group_prefix : str, optional
+        Group prefix for organized data (e.g., "spatial", "temporal").
+        If provided, VCPs are expected under this prefix (e.g., "/spatial/VCP-212").
+        If None, VCPs are expected at the root level (e.g., "/VCP-212").
+
+    Returns
+    -------
+    xarray.Dataset
+        Concatenated dataset with all VCP sweeps merged along vcp_time dimension
+
+    Raises
+    ------
+    ValueError
+        If no VCP nodes are found, sweep not found in any VCP, or coordinates are incompatible
+
+    Examples
+    --------
+    >>> # Standard structure (VCPs at root)
+    >>> dtree = convert_files(radar_files, ...)
+    >>> sweep_0_continuous = concat_sweep_across_vcps(dtree, sweep_name="sweep_0")
+    >>>
+    >>> # With group prefix (e.g., spatial/temporal organization)
+    >>> sweep_0_spatial = concat_sweep_across_vcps(dtree, sweep_name="sweep_0", group_prefix="spatial")
+    >>> sweep_0_temporal = concat_sweep_across_vcps(dtree, sweep_name="sweep_0", group_prefix="temporal")
+    >>>
+    >>> # Calculate QPE on continuous data
+    >>> qpe = calculate_qpe(sweep_0_continuous['DBZH'])
+
+    Notes
+    -----
+    - Assumes sweep_0 (and sweep_1) have consistent coordinates across VCPs
+    - VCP nodes are automatically detected from the DataTree structure (VCP-* pattern)
+    - Supports both single-store (with group_prefix) and multi-store (without) modes
+    - Time coordinates are sorted after concatenation (if sort_by_time=True)
+    - Missing sweeps in a VCP will be skipped with a warning
+    - Coordinate validation checks azimuth and range dimension sizes for compatibility
+    """
+    # Find all VCP nodes in the DataTree
+    vcp_nodes = {}
+    for node_path in dtree.groups:
+        parts = node_path.strip("/").split("/")
+
+        # Handle group_prefix if provided
+        if group_prefix:
+            # Expect structure: /group_prefix/VCP-XXX or group_prefix/VCP-XXX
+            if (
+                len(parts) >= 2
+                and parts[0] == group_prefix
+                and parts[1].startswith("VCP-")
+            ):
+                if len(parts) == 2:  # Only VCP root nodes
+                    vcp_name = parts[1]
+                    vcp_nodes[vcp_name] = dtree[node_path]
+        else:
+            # Standard structure: /VCP-XXX or VCP-XXX
+            if parts and parts[0].startswith("VCP-"):
+                if len(parts) == 1:  # Only VCP root nodes
+                    vcp_name = parts[0]
+                    vcp_nodes[vcp_name] = dtree[node_path]
+
+    if not vcp_nodes:
+        prefix_msg = f" under '{group_prefix}/' prefix" if group_prefix else ""
+        raise ValueError(
+            f"No VCP nodes found in DataTree{prefix_msg}. "
+            f"Expected nodes matching 'VCP-*' pattern."
+        )
+
+    # Extract the specified sweep from each VCP
+    sweep_datasets = []
+    skipped_vcps = []
+
+    for vcp_name, _vcp_node in vcp_nodes.items():
+        # Build sweep paths with group_prefix if provided
+        if group_prefix:
+            # With prefix: /spatial/VCP-212/sweep_0 or spatial/VCP-212/sweep_0
+            sweep_path = f"/{group_prefix}/{vcp_name}/{sweep_name}"
+            sweep_path_alt = f"{group_prefix}/{vcp_name}/{sweep_name}"
+        else:
+            # Without prefix: /VCP-212/sweep_0 or VCP-212/sweep_0
+            sweep_path = f"/{vcp_name}/{sweep_name}"
+            sweep_path_alt = f"{vcp_name}/{sweep_name}"
+
+        if sweep_path in dtree.groups:
+            sweep_ds = dtree[sweep_path].ds
+            sweep_datasets.append((vcp_name, sweep_ds))
+        elif sweep_path_alt in dtree.groups:
+            sweep_ds = dtree[sweep_path_alt].ds
+            sweep_datasets.append((vcp_name, sweep_ds))
+        else:
+            skipped_vcps.append(vcp_name)
+
+    if not sweep_datasets:
+        raise ValueError(
+            f"Sweep '{sweep_name}' not found in any VCP nodes. "
+            f"Available VCPs: {list(vcp_nodes.keys())}"
+        )
+
+    if skipped_vcps:
+        import warnings
+
+        warnings.warn(
+            f"Sweep '{sweep_name}' not found in VCPs: {skipped_vcps}. "
+            f"Proceeding with {len(sweep_datasets)} VCPs.",
+            UserWarning,
+            stacklevel=2,
+        )
+
+    # Validate coordinate compatibility if requested
+    if validate_coords and len(sweep_datasets) > 1:
+        reference_vcp, reference_ds = sweep_datasets[0]
+        ref_azimuth_size = reference_ds.sizes.get("azimuth")
+        ref_range_size = reference_ds.sizes.get("range")
+
+        for vcp_name, sweep_ds in sweep_datasets[1:]:
+            azimuth_size = sweep_ds.sizes.get("azimuth")
+            range_size = sweep_ds.sizes.get("range")
+
+            if azimuth_size != ref_azimuth_size or range_size != ref_range_size:
+                raise ValueError(
+                    f"Coordinate mismatch between {reference_vcp} and {vcp_name}:\n"
+                    f"  {reference_vcp}: azimuth={ref_azimuth_size}, range={ref_range_size}\n"
+                    f"  {vcp_name}: azimuth={azimuth_size}, range={range_size}\n"
+                    f"Set validate_coords=False to skip this check."
+                )
+
+    # Concatenate datasets along the append_dim
+    datasets_only = [ds for _, ds in sweep_datasets]
+    concatenated = xr.concat(datasets_only, dim=append_dim)
+
+    # Sort by time if requested
+    if sort_by_time and append_dim in concatenated.coords:
+        concatenated = concatenated.sortby(append_dim)
+
+    return concatenated

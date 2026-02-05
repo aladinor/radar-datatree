@@ -13,11 +13,15 @@ extensions = [
     "myst_nb",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
+    "sphinx_design",
+    "sphinx_copybutton",
 ]
 
 # MyST-NB settings
 nb_execution_mode = "off"  # Don't execute notebooks, use saved outputs
 myst_enable_extensions = [
+    "attrs_block",
+    "attrs_inline",
     "colon_fence",
     "deflist",
     "dollarmath",
@@ -48,7 +52,12 @@ source_suffix = {
 }
 
 # Exclude patterns
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "QVP-Workflow-Benchmark.ipynb",  # Benchmark notebook for paper, not rendered in docs
+]
 
 # Suppress warnings for notebooks with no outputs
 suppress_warnings = ["myst.header"]
