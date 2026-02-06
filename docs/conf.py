@@ -18,7 +18,9 @@ extensions = [
 ]
 
 # MyST-NB settings
-nb_execution_mode = "off"  # Don't execute notebooks, use saved outputs
+nb_execution_mode = (
+    "cache"  # Execute and cache results; re-execute only when code changes
+)
 myst_enable_extensions = [
     "attrs_block",
     "attrs_inline",
