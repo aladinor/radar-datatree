@@ -21,6 +21,7 @@ extensions = [
 nb_execution_mode = (
     "cache"  # Execute and cache results; re-execute only when code changes
 )
+nb_execution_timeout = 40  # seconds per cell
 myst_enable_extensions = [
     "attrs_block",
     "attrs_inline",
