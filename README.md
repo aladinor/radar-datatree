@@ -54,7 +54,9 @@ Radar DataTree provides a **dataset-level abstraction** that aggregates individu
 │   │   ├── ZDR       # Differential reflectivity
 │   │   ├── RHOHV     # Cross-correlation coefficient
 │   │   └── PHIDP     # Differential phase
-│   ├── sweep_1/
+│   ├── sweep_1/      # Next elevation
+│   │   ├── DBZH, ZDR, RHOHV, PHIDP
+│   │   └── VELOCITY  # Doppler velocity (not in sweep_0)
 │   └── ...
 ├── VCP-212/          # Precipitation mode
 │   └── ...
@@ -115,6 +117,7 @@ dtree = xr.open_datatree(
     consolidated=False,
     chunks={},
     engine="zarr",
+    max_concurrency=5,
 )
 
 # Explore: 92 GB of data, loaded in ~1.5 seconds!
@@ -137,8 +140,9 @@ Explore the full capabilities through our Jupyter notebooks:
 
 | Notebook | Description |
 |----------|-------------|
-| [**NEXRAD KLOT Demo**](https://aladinor.github.io/radar-datatree/NEXRAD-KLOT-Demo.html) | Complete tutorial: data access, visualization, QVP computation, and QPE |
-| [**Workflow Comparison**](https://aladinor.github.io/radar-datatree/QVP-Workflow-Comparison.html) | Side-by-side comparison of ARCO vs traditional file-based workflows |
+| [**1. Getting Started**](https://aladinor.github.io/radar-datatree/1.NEXRAD-KLOT-Demo.html) | Data access, radar fundamentals, polarimetric visualization, and time-based selection |
+| [**2. QVP Workflow Comparison**](https://aladinor.github.io/radar-datatree/2.QVP-Workflow-Comparison.html) | Reproduce a published QVP figure — ARCO vs traditional file-based workflows |
+| [**3. QPE Snow Storm**](https://aladinor.github.io/radar-datatree/3.QPE-Snow-Storm.html) | Compute snow accumulation for the December 2025 Illinois winter storm |
 
 ### Run Locally
 
