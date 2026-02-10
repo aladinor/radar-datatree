@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
   <a href="https://doi.org/10.48550/arXiv.2510.24943"><img src="https://img.shields.io/badge/arXiv-2510.24943-b31b1b.svg" alt="arXiv"></a>
-  <a href="https://docs.atmoscale.ai"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue" alt="Documentation"></a>
+  <a href="https://atmoscale.github.io/radar-datatree/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue" alt="Documentation"></a>
   <a href="https://github.com/AtmoScale/radar-datatree/actions"><img src="https://github.com/AtmoScale/radar-datatree/actions/workflows/render-notebooks.yml/badge.svg" alt="CI"></a>
 </p>
 
@@ -140,9 +140,9 @@ Explore the full capabilities through our Jupyter notebooks:
 
 | Notebook | Description |
 |----------|-------------|
-| [**1. Getting Started**](https://docs.atmoscale.ai/1.NEXRAD-KLOT-Demo.html) | Data access, radar fundamentals, polarimetric visualization, and time-based selection |
-| [**2. QVP Workflow Comparison**](https://docs.atmoscale.ai/2.QVP-Workflow-Comparison.html) | Reproduce a published QVP figure — ARCO vs traditional file-based workflows |
-| [**3. QPE Snow Storm**](https://docs.atmoscale.ai/3.QPE-Snow-Storm.html) | Compute snow accumulation for the December 2025 Illinois winter storm |
+| [**1. Getting Started**](https://atmoscale.github.io/radar-datatree/1.NEXRAD-KLOT-Demo.html) | Data access, radar fundamentals, polarimetric visualization, and time-based selection |
+| [**2. QVP Workflow Comparison**](https://atmoscale.github.io/radar-datatree/2.QVP-Workflow-Comparison.html) | Reproduce a published QVP figure — ARCO vs traditional file-based workflows |
+| [**3. QPE Snow Storm**](https://atmoscale.github.io/radar-datatree/3.QPE-Snow-Storm.html) | Compute snow accumulation for the December 2025 Illinois winter storm |
 
 ### Run Locally
 

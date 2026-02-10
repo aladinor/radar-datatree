@@ -55,7 +55,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/AtmoScale/radar-datatree"
-Documentation = "https://docs.atmoscale.ai"
+Documentation = "https://atmoscale.github.io/radar-datatree"
 Repository = "https://github.com/AtmoScale/radar-datatree"
 Paper = "https://doi.org/10.48550/arXiv.2510.24943"
 
