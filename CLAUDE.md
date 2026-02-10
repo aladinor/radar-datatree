@@ -147,6 +147,17 @@ GitHub Actions workflow (`.github/workflows/render-notebooks.yml`):
 
 There is no formal test suite — notebook execution via Sphinx serves as integration testing.
 
+### Branch Protection
+
+The `main` branch has protection rules enabled:
+- **Pull requests required** — no direct pushes to main
+- **1 approving review** required before merging
+- **Stale reviews dismissed** — re-review needed after new commits
+- **Enforce admins** — rules apply to org owners too
+- **Force pushes and branch deletion blocked**
+
+All changes must go through a feature branch and PR workflow.
+
 ## Reference Paper
 
 Ladino-Rincón & Nesbitt (2025). Radar DataTree: A FAIR and Cloud-Native Framework for Scalable Weather Radar Archives. arXiv:2510.24943
