@@ -54,9 +54,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aladinor/radar-datatree"
-Documentation = "https://github.com/aladinor/radar-datatree"
-Repository = "https://github.com/aladinor/radar-datatree"
+Homepage = "https://github.com/AtmoScale/radar-datatree"
+Documentation = "https://docs.atmoscale.ai"
+Repository = "https://github.com/AtmoScale/radar-datatree"
 Paper = "https://doi.org/10.48550/arXiv.2510.24943"
 
 [tool.hatch.metadata]

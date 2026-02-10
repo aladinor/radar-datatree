@@ -123,7 +123,7 @@ Compute snow accumulation. Analyze the December 2025 Illinois winter storm. Appl
 
 ````{tab-item} Conda
 ```bash
-git clone https://github.com/aladinor/radar-datatree.git
+git clone https://github.com/AtmoScale/radar-datatree.git
 cd radar-datatree
 conda env create -f environment.yml
 conda activate radar-datatree
@@ -133,7 +133,7 @@ jupyter lab notebooks/
 
 ````{tab-item} uv
 ```bash
-git clone https://github.com/aladinor/radar-datatree.git
+git clone https://github.com/AtmoScale/radar-datatree.git
 cd radar-datatree
 uv sync
 uv run jupyter lab notebooks/
@@ -197,7 +197,7 @@ The stack ensures compatibility with existing tools while enabling cloud-native 
 :gutter: 2
 
 :::{grid-item}
-```{button-link} https://github.com/aladinor/radar-datatree
+```{button-link} https://github.com/AtmoScale/radar-datatree
 :color: primary
 :outline:
 
