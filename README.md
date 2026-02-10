@@ -9,6 +9,7 @@
   <a href="https://doi.org/10.48550/arXiv.2510.24943"><img src="https://img.shields.io/badge/arXiv-2510.24943-b31b1b.svg" alt="arXiv"></a>
   <a href="https://atmoscale.github.io/radar-datatree/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue" alt="Documentation"></a>
   <a href="https://github.com/AtmoScale/radar-datatree/actions"><img src="https://github.com/AtmoScale/radar-datatree/actions/workflows/render-notebooks.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/awslabs/open-data-registry/pull/3039"><img src="https://img.shields.io/badge/AWS-Open%20Data-orange" alt="AWS Open Data"></a>
 </p>
 
 <p align="center">
@@ -194,6 +195,8 @@ pip install -e ".[dev]"
 | **Access** | Anonymous (no credentials) |
 | **Size** | ~92 GB |
 | **Time Range** | December 2025 (continuously updated) |
+
+> **AWS Open Data Registry**: This dataset has been submitted to the [AWS Open Data Registry](https://github.com/awslabs/open-data-registry/pull/3039) for broader discoverability and access.
 
 ---
 
