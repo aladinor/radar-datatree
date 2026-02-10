@@ -232,6 +232,15 @@ Icechunk Docs
 ```
 :::
 
+:::{grid-item}
+```{button-link} https://github.com/awslabs/open-data-registry/pull/3039
+:color: warning
+:outline:
+
+AWS Open Data
+```
+:::
+
 ::::
 
 ---

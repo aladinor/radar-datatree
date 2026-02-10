@@ -33,6 +33,7 @@ NEXRAD KLOT data on OSN:
 - Prefix: `KLOT-RT`
 - Endpoint: `https://umn1.osn.mghpcc.org`
 - Access: Anonymous
+- AWS Open Data Registry: Submitted via [PR #3039](https://github.com/awslabs/open-data-registry/pull/3039)
 
 ## Common Commands
 
